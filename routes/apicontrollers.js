@@ -1,82 +1,25 @@
 var express = require('express');
 var mysql = require('mysql');
-var validator = require('express-joi-validation')({});
 var config = require('../config/database');
 var router = express.Router();
 
 
 // Login
-router.post('/login1', function (req, res) {
-  var validData = joi.validate(req.body,
-    userSchema,
-    {
-      allowUnknown: false,
-      abortEarly: false
+router.post('/login', function (req, res) {
+  var email = req.body.email;
+  var password = req.body.password;
+
+  var connection = mysql.createConnection(config);
+
+  connection.query('select count(*) as result from users where email = ? and password = ?',
+    [email, password],
+    function (error, results, fields) {
+      if (error) throw res.send(error);
+      results[0].result === 1 ? res.json(1) : res.status(400).json(0);
     });
-  if (validData.error) {
-    res.status(400).json(validData.error.toString());
-  } else {
-    var connection = mysql.createConnection(config);
 
-    connection.query('select count(*) as result from users where email = ? and password = ?',
-      [validData.value.email, validData.value.password],
-      function (error, results, fields) {
-        if (error) throw res.send(error);
-        results[0].result === 1 ? res.json(1) : res.status(400).json(0);
-      });
-
-    connection.end();
-  }
+  connection.end();
 });
-
-router.post('/login2',
-  validator.body(require('../validations/schema-login'),
-    { joi: { allowUnknown: false, abortEarly: false } }),
-  function (req, res) {
-
-    var connection = mysql.createConnection(config);
-
-    connection.query('select count(*) as result from users where email = ? and password = ?',
-      [req.body.email, req.body.password],
-      function (error, results, fields) {
-        if (error) throw res.send(error);
-        results[0].result === 1 ? res.json(1) : res.status(400).json(0);
-      });
-
-    connection.end();
-  }
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////
 
 // Register
 router.post('/register', function (req, res) {
