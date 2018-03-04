@@ -3,6 +3,8 @@ var mysql = require('mysql');
 var config = require('../config/database');
 var router = express.Router();
 
+//test
+
 
 // Login
 router.post('/login', function (req, res) {
