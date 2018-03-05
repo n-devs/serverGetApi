@@ -18,7 +18,7 @@ router.post('/register', function(req, res) {
 
 	connection.query(querys.users.isInTheDatabase, [ email, password ], function(error, results, fields) {
 		if (error) throw res.send(error);
-		if (!(results[0].result >= 1)) {
+		if (!(results.length >= 1)) {
 			var connection = mysql.createConnection(config);
 			connection.query(querys.users.create, [ name, birthday, gender, phonenumber, email, password ], function(
 				error,
