@@ -150,7 +150,14 @@ router
 					status: 0,
 					error: error
 				});
-			res.json(results);
+			if (result) {
+				res.json(results);
+			} else {
+				res.json({
+					status: 0,
+					error: 'This product is not in the database.'
+				});
+			}
 		});
 	})
 	// Add product to store
@@ -268,6 +275,7 @@ router.post('/login', (req, res) => {
 	});
 });
 
+// TODO : Finish this api
 router.post('/store/receipt', (req, res) => {
 	var userId = req.body.userId;
 	var storeId = req.body.storeId;
