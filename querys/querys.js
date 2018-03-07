@@ -44,5 +44,15 @@ module.exports = {
 	productLog: {
 		create:
 			'INSERT INTO product_logs (product_id, store_id, product_log_date, product_log_quantity, product_log_cost, product_log_price) VALUES (?, ?, ?, ?, ?, ?)'
+	},
+
+	receipt: {
+		create:
+			'INSERT INTO receipts (user_id, store_id, receipt_date, receipt_total_price,customer_money_paid ,receipt_money_change) VALUES (?, ?, ?, ?, ?, ?)'
+	},
+
+	receiptProductDetail: {
+		create:
+			'INSERT INTO receipt_product_details (receipt_id, product_id, receipt_product_sale_quantity, receipt_product_sale,price, receipt_product_total_price) VALUES (?, ?, ?, ?, ?)'
 	}
 };

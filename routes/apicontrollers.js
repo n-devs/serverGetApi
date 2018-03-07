@@ -267,4 +267,54 @@ router.post('/login', (req, res) => {
 			});
 	});
 });
+
+router.post('/store/receipt', (req, res) => {
+	var userId = req.body.userId;
+	var storeId = req.body.storeId;
+	var receiptTotalPrice = req.body.receiptTotalPrice;
+	var customerMoneyPaid = req.body.customerMoneyPaid;
+	var receiptMoneyChange = req.body.receiptMoneyChange;
+	var productDetail = req.body.productDetail;
+
+	var connection = mysql.createConnection(config);
+
+	connection.query(
+		querys.receipt.create,
+		[
+			userId,
+			storeId,
+			querys.functions.CURRENT_TIMESTAMP,
+			receiptTotalPrice,
+			customerMoneyPaid,
+			receiptMoneyChange
+		],
+		(error, results, fields) => {
+			if (error)
+				throw res.json({
+					status: 0,
+					error: error
+				});
+
+			var receiptId = results.insertId;
+
+			productDetail.forEach((element) => {
+				var connection = mysql.createConnection(config);
+
+				connection.query(
+					querys.receiptProductDetail.create,
+					[
+						receiptId,
+						productDetail.productId,
+						productDetail.saleQuantity,
+						productDetail.salePrice,
+						productDetail.saleTotalPrice
+					],
+					(error, results, fields) => {}
+				);
+			});
+
+			connection.end();
+		}
+	);
+});
 module.exports = router;
