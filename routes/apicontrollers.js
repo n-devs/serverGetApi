@@ -305,7 +305,7 @@ router.post('/store/receipt', (req, res) => {
 
 			var receiptId = results.insertId;
 
-			productDetail.forEach((element) => {
+			for(var i = 0; i < productDetail.length; i++) {
 				var connection = mysql.createConnection(config);
 
 				connection.query(
@@ -319,7 +319,9 @@ router.post('/store/receipt', (req, res) => {
 					],
 					(error, results, fields) => {}
 				);
-			});
+			}
+
+		
 
 			connection.end();
 		}
