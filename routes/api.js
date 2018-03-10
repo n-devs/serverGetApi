@@ -16,10 +16,12 @@ router.post('/register', function(req, res) {
 
 	var connection = mysql.createConnection(config);
 
+	// Check if this user is already in the database
 	connection.query(querys.users.isInTheDatabase, [ email, password ], function(error, results, fields) {
 		if (error) throw res.send(error);
 		if (!(results.length >= 1)) {
 			var connection = mysql.createConnection(config);
+			// Create user
 			connection.query(querys.users.create, [ name, birthday, gender, phonenumber, email, password ], function(
 				error,
 				results,
@@ -60,31 +62,53 @@ router.post('/store', (req, res) => {
 	var userStatus = req.body.userStatus;
 
 	var connection = mysql.createConnection(config);
-	connection.query(
-		querys.stores.create,
-		[ storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode ],
-		(error, results, fields) => {
-			if (error)
-				throw res.json({
-					status: 0,
-					error: error
-				});
-			var storeId = results.insertId;
-			var connection = mysql.createConnection(config);
-			connection.query(querys.userInStores.create, [ userId, storeId, userStatus ], (error, results, fields) => {
-				if (error)
-					throw res.json({
-						status: 0,
-						error: error
-					});
-				res.json({
-					status: 1,
-					storeId: storeId,
-					error: null
-				});
+
+	// Check if this store name in the database
+	connection.query(querys.stores.isInTheDatabase, [ storeName ], (error, results, fields) => {
+		if (error)
+			throw res.json({
+				status: 0,
+				error: error
 			});
-		}
-	);
+		if (!(results.length >= 1)) {
+			var connection = mysql.createConnection(config);
+			// Add store to the database
+			connection.query(
+				querys.stores.create,
+				[ storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode ],
+				(error, results, fields) => {
+					if (error)
+						throw res.json({
+							status: 0,
+							error: error
+						});
+					var storeId = results.insertId;
+					var connection = mysql.createConnection(config);
+					// Bind store_id to user_id
+					connection.query(
+						querys.userInStores.create,
+						[ userId, storeId, userStatus ],
+						(error, results, fields) => {
+							if (error)
+								throw res.json({
+									status: 0,
+									error: error
+								});
+							res.json({
+								status: 1,
+								storeId: storeId,
+								error: null
+							});
+						}
+					);
+				}
+			);
+		} else
+			res.json({
+				status: 0,
+				error: 'This store is already in the database'
+			});
+	});
 });
 
 // Add product to the databasse
@@ -205,12 +229,14 @@ router
 
 		var connection = mysql.createConnection(config);
 
+		//Check if this product is already in the store (first time add)
 		connection.query(querys.productInStores.isInTheDatabase, [ productId, storeId ], (error, results, fields) => {
 			if (error)
 				throw res.json({
 					status: 0,
 					error: error
 				});
+			//if not add to the store directly
 			if (!(results[0].result >= 1)) {
 				var connection = mysql.createConnection(config);
 				connection.query(
@@ -231,6 +257,7 @@ router
 				);
 			} else {
 				var connection = mysql.createConnection(config);
+				// Else add to the product_logs table first 
 				connection.query(
 					querys.productLog.create,
 					[
@@ -250,6 +277,7 @@ router
 					}
 				);
 
+				// Then update to the product_in_stores table
 				connection.query(
 					querys.productInStores.updateStockIn,
 					[ productQuantity, productPrice, productMinimumQuantity, productId, storeId ],

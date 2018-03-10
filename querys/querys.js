@@ -14,6 +14,7 @@ module.exports = {
 			'SELECT uis.store_id AS storeId, uis.user_status AS userStatus FROM users JOIN user_in_stores as uis ON users.user_id = uis.user_id WHERE users.user_id = ?'
 	},
 	stores: {
+		isInTheDatabase : 'SELECT store_id FROM stores WHERE store_name = ?',
 		create:
 			'INSERT INTO stores (store_name, store_address, store_sub_district, store_district, store_province, store_postalcode) VALUES (?, ?, ?, ?, ?, ?)'
 	},
