@@ -135,36 +135,63 @@ router.post('/product', (req, res) => {
 	});
 });
 
+// GET product detail from the database
+router.get('/product/:productBarcode', (req, res) => {
+	var productBarcode = req.params.productBarcode;
+
+	var connection = mysql.createConnection(config);
+
+	connection.query(querys.products.getProductDetail, [ productBarcode ], (error, results, fields) => {
+		if (error)
+			throw res.json({
+				status: 0,
+				error: error
+			});
+
+		if (results.length === 1) {
+			res.json({
+				productId: results[0].productId,
+				productName: results[0].productName,
+				productBrand: results[0].productBrand
+			});
+		}
+	});
+});
+
 router
 	.route('/product/:productBarcodeOrId/store/:storeId')
-	// Get product from the database
+	// Get product detail from store
 	.get((req, res) => {
 		var productBarcode = req.params.productBarcodeOrId;
 		var storeId = req.params.storeId;
 
 		var connection = mysql.createConnection(config);
 
-		connection.query(querys.products.get, [ productBarcode, storeId ], (error, results, fields) => {
-			if (error)
-				throw res.json({
-					status: 0,
-					error: error
-				});
-			if (results.length === 1) {
-				res.json({
-					productId: results[0].productId,
-					productName: results[0].productName,
-					productBrand: results[0].productBrand,
-					productPrice: results[0].productPrice,
-					productQuantity: results[0].productQuantity
-				});
-			} else {
-				res.json({
-					status: 0,
-					error: 'This product is not in the database.'
-				});
+		connection.query(
+			querys.products.getProductDetailFromStore,
+			[ productBarcode, storeId ],
+			(error, results, fields) => {
+				if (error)
+					throw res.json({
+						status: 0,
+						error: error
+					});
+				if (results.length === 1) {
+					res.json({
+						productId: results[0].productId,
+						productName: results[0].productName,
+						productBrand: results[0].productBrand,
+						productPrice: results[0].productPrice,
+						productQuantity: results[0].productQuantity
+					});
+				} else {
+					res.json({
+						status: 0,
+						error: 'This product is not in the database.'
+					});
+				}
 			}
-		});
+		);
 	})
 	// Add product to store
 	.post((req, res) => {

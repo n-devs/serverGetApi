@@ -25,8 +25,11 @@ module.exports = {
 	products: {
 		isInTheDatabase: 'SELECT count(*) as result FROM products WHERE product_barcode = ? AND product_brand = ?',
 
-		get:
+		getProductDetailFromStore:
 			'SELECT pd.product_id AS productId, pd.product_name AS productName, pd.product_brand AS productBrand, pis.product_price AS productPrice, pis.product_quantity AS productQuantity FROM products as pd JOIN product_in_stores as pis ON pd.product_id = pis.product_id WHERE pd.product_barcode = ? AND pis.store_id = ? ',
+
+		getProductDetail:
+			'SELECT product_id AS productId, product_name AS productName, product_brand AS productBrand FROM products WHERE product_barcode = ?',
 
 		create:
 			'INSERT INTO products (product_barcode, product_name, product_brand, product_manufacturer, product_size, product_status) VALUES (?, ?, ?, ?, ?, ?)'
