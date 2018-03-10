@@ -37,8 +37,11 @@ module.exports = {
 		create:
 			'INSERT INTO product_in_stores (product_id, store_id, product_quantity, product_price, product_minimum_quantity) VALUES (?, ?, ?, ?, ?)',
 
-		update:
-			'UPDATE product_in_stores SET product_quantity = product_quantity + ?, product_price = ?, product_minimum_quantity = ? WHERE product_id = ? AND store_id = ?'
+		updateStockIn:
+			'UPDATE product_in_stores SET product_quantity = product_quantity + ?, product_price = ?, product_minimum_quantity = ? WHERE product_id = ? AND store_id = ?',
+		updateStockOut:
+			'UPDATE product_in_stores SET product_quantity = product_quantity - ? WHERE product_id = ? AND store_id = ?',
+		getStockQuantity: 'SELECT product_quantity FROM product_in_stores WHERE product_id = ? AND store_id = ?'
 	},
 
 	productLog: {
@@ -53,6 +56,6 @@ module.exports = {
 
 	receiptProductDetail: {
 		create:
-			'INSERT INTO receipt_product_details (receipt_id, product_id, receipt_product_sale_quantity, receipt_product_sale,price, receipt_product_total_price) VALUES (?, ?, ?, ?, ?)'
+			'INSERT INTO receipt_product_details (receipt_id, product_id, receipt_product_sale_quantity, receipt_product_sale_price, receipt_product_total_price) VALUES (?, ?, ?, ?, ?)'
 	}
 };

@@ -218,7 +218,7 @@ router
 				);
 
 				connection.query(
-					querys.productInStores.update,
+					querys.productInStores.updateStockIn,
 					[ productQuantity, productPrice, productMinimumQuantity, productId, storeId ],
 					(error, results, fields) => {
 						if (error)
@@ -275,10 +275,11 @@ router.post('/login', (req, res) => {
 	});
 });
 
-// TODO : Finish this api
-router.post('/store/receipt', (req, res) => {
+//Create receipt
+router.post('/store/:storeId/receipt', (req, res) => {
+	//TODO : Validation
+	var storeId = req.params.storeId;
 	var userId = req.body.userId;
-	var storeId = req.body.storeId;
 	var receiptTotalPrice = req.body.receiptTotalPrice;
 	var customerMoneyPaid = req.body.customerMoneyPaid;
 	var receiptMoneyChange = req.body.receiptMoneyChange;
@@ -286,6 +287,51 @@ router.post('/store/receipt', (req, res) => {
 
 	var connection = mysql.createConnection(config);
 
+	// TODO : Validation
+	// Update Stock
+	for (var i = 0; i < productDetail.length; i++) {
+		let saleQuantity = productDetail[i].saleQuantity;
+		let productId = productDetail[i].productId;
+		let isProductQuantityMoreThanSaleQuantity = true;
+
+		// TODO : Change algorithum
+		// Check product stock quantity
+		connection.query(querys.productInStores.getStockQuantity, [ productId, storeId ], (error, results, fields) => {
+			// TODO : FIX header error from send res more then 1 time (n loop)
+			if (error)
+				throw res.json({
+					status: 0,
+					error: error
+				});
+			if (results[0].product_quantity >= saleQuantity) {
+				var connection = mysql.createConnection(config);
+				// Update stock
+				connection.query(
+					querys.productInStores.updateStockOut,
+					[ saleQuantity, productId, storeId ],
+					(error, results, fields) => {
+						// TODO : FIX header error from send res more then 1 time (n loop)
+						if (error)
+							throw res.json({
+								status: 0,
+								error: error
+							});
+					}
+				);
+			}
+		});
+
+		//TODO : Check if ProductQuantityMoreThanSaleQuantity if so break the loop
+		// if (isProductQuantityMoreThanSaleQuantity === false) {
+		// 	res.json({
+		// 		status: 0,
+		// 		error: 'Product quantity is less that sale quantity'
+		// 	});
+		// 	break;
+		// }
+	}
+
+	// Create receipt
 	connection.query(
 		querys.receipt.create,
 		[
@@ -303,27 +349,37 @@ router.post('/store/receipt', (req, res) => {
 					error: error
 				});
 
+			// TODO : Change algorithum
+			// create receipt detail
 			var receiptId = results.insertId;
-
-			for(var i = 0; i < productDetail.length; i++) {
+			for (var i = 0; i < productDetail.length; i++) {
 				var connection = mysql.createConnection(config);
 
 				connection.query(
 					querys.receiptProductDetail.create,
 					[
 						receiptId,
-						productDetail.productId,
-						productDetail.saleQuantity,
-						productDetail.salePrice,
-						productDetail.saleTotalPrice
+						productDetail[i].productId,
+						productDetail[i].saleQuantity,
+						productDetail[i].salePrice,
+						productDetail[i].saleTotalPrice
 					],
-					(error, results, fields) => {}
+					(error, results, fields) => {
+						// TODO : FIX header error from send res more then 1 time (n loop)
+						// if (error)
+						// 	throw res.json({
+						// 		status: 0,
+						// 		error: error
+						// 	});
+					}
 				);
 			}
 
-		
-
-			connection.end();
+			res.json({
+				status: 1,
+				receiptId: receiptId,
+				error: null
+			});
 		}
 	);
 });
