@@ -150,8 +150,14 @@ router
 					status: 0,
 					error: error
 				});
-			if (result) {
-				res.json(results);
+			if (results.length === 1) {
+				res.json({
+					productId: results[0].productId,
+					productName: results[0].productName,
+					productBrand: results[0].productBrand,
+					productPrice: results[0].productPrice,
+					productQuantity: results[0].productQuantity
+				});
 			} else {
 				res.json({
 					status: 0,
@@ -262,7 +268,7 @@ router.post('/login', (req, res) => {
 					});
 				res.json({
 					status: 1,
-					user_id: userId,
+					userId: userId,
 					userStoreList: results,
 					error: null
 				});
