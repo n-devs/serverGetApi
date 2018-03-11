@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Register Form</title>
+</head>
+<body>
+    <h1>Add product to the database</h1>
+
+    <form action="<%= serverAddress  %>:3000/api/product" method="POST">
+        <label for="productBarcode">Product barcode:</label>
+        <input type="text" name="productBarcode" id="productBarcode" required><span style="color:red">*</span><br><br> 
+
+        <label for="productName">Product name:</label>
+        <input type="text" name="productName" id="productName" required><span style="color:red">*</span><br><br>
+
+        <label for="productBrand">Product brand:</label>
+        <input type="text" name="productBrand" id="productBrand" required><span style="color:red">*</span><br><br>
+
+        <label for="productManufacturer">Product manufacturer:</label>
+        <input type="text" name="productManufacturer" id="productManufacturer"><br><br>
+
+        <label for="productSize">Product size:</label>
+        <input type="text" name="productSize" id="productSize"><br><br>
+
+        <input type="hidden" name="productStatus" id="productStatus" value="1" required>
+
+        <button type="submit">Submit</button>
+    </form>
+
+   
+</body>
+</html>
