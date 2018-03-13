@@ -1,35 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+    <script src="http://malsup.github.com/jquery.form.js"></script>
+
+    <script> 
+        // wait for the DOM to be loaded 
+        $(document).ready(function () {
+            var options = {
+                data: { productStatus: 1 },
+                dataType: 'json',
+                success: function (responseText, statusText, xhr, $form) {
+                    if (responseText.status == 1) {
+                        alert('SUCCESS productId : ' + responseText.productId);
+                        $form.resetForm();
+                    }
+                    else
+                        alert(responseText.error);
+                }
+            };
+            // bind 'myForm' and provide a simple callback function 
+            $('.myForm').ajaxForm(options);
+        }); 
+    </script>
     <title>Register Form</title>
 </head>
+
 <body>
     <h1>Add product to the database</h1>
 
-    <form action="<%= serverAddress  %>:3000/api/product" method="POST">
+
+    <form action="<%= serverAddress  %>:3000/api/product" method="POST" class="myForm">
         <label for="productBarcode">Product barcode:</label>
-        <input type="text" name="productBarcode" id="productBarcode" required><span style="color:red">*</span><br><br> 
+        <input type="text" name="productBarcode" id="productBarcode" placeholder="123456789" required>
+        <span style="color:red">*</span>
+        <br>
+        <br>
 
         <label for="productName">Product name:</label>
-        <input type="text" name="productName" id="productName" required><span style="color:red">*</span><br><br>
+        <input type="text" name="productName" id="productName" placeholder="ลูกอมฮอลล์ผสมนํ้าผึ้ง" required>
+        <span style="color:red">*</span>
+        <br>
+        <br>
 
         <label for="productBrand">Product brand:</label>
-        <input type="text" name="productBrand" id="productBrand" required><span style="color:red">*</span><br><br>
+        <input type="text" name="productBrand" id="productBrand" placeholder="Puton" required>
+        <span style="color:red">*</span>
+        <br>
+        <br>
 
         <label for="productManufacturer">Product manufacturer:</label>
-        <input type="text" name="productManufacturer" id="productManufacturer"><br><br>
+        <input type="text" name="productManufacturer" id="productManufacturer" placeholder="Puton Company">
+        <br>
+        <br>
 
         <label for="productSize">Product size:</label>
-        <input type="text" name="productSize" id="productSize"><br><br>
-
-        <input type="hidden" name="productStatus" id="productStatus" value="1" required>
+        <input type="text" name="productSize" id="productSize" placeholder="S">
+        <br>
+        <br>
 
         <button type="submit">Submit</button>
     </form>
 
-   
+
 </body>
+
 </html>
