@@ -5,7 +5,7 @@ var querys = require('../querys/querys');
 var router = express.Router();
 
 // Register
-router.post('/register', function(req, res) {
+router.post('/register', function (req, res) {
 	//TODO : Validatetion
 	var name = req.body.name;
 	var birthday = req.body.birthday;
@@ -17,12 +17,12 @@ router.post('/register', function(req, res) {
 	var connection = mysql.createConnection(config);
 
 	// Check if this user is already in the database
-	connection.query(querys.users.isInTheDatabase, [ email, password ], function(error, results, fields) {
+	connection.query(querys.users.isInTheDatabase, [email, password], function (error, results, fields) {
 		if (error) throw res.send(error);
 		if (!(results.length >= 1)) {
 			var connection = mysql.createConnection(config);
 			// Create user
-			connection.query(querys.users.create, [ name, birthday, gender, phonenumber, email, password ], function(
+			connection.query(querys.users.create, [name, birthday, gender, phonenumber, email, password], function (
 				error,
 				results,
 				fields
@@ -64,7 +64,7 @@ router.post('/store', (req, res) => {
 	var connection = mysql.createConnection(config);
 
 	// Check if this store name in the database
-	connection.query(querys.stores.isInTheDatabase, [ storeName ], (error, results, fields) => {
+	connection.query(querys.stores.isInTheDatabase, [storeName], (error, results, fields) => {
 		if (error)
 			throw res.json({
 				status: 0,
@@ -74,8 +74,7 @@ router.post('/store', (req, res) => {
 			var connection = mysql.createConnection(config);
 			// Add store to the database
 			connection.query(
-				querys.stores.create,
-				[ storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode ],
+				querys.stores.create, [storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode],
 				(error, results, fields) => {
 					if (error)
 						throw res.json({
@@ -86,8 +85,7 @@ router.post('/store', (req, res) => {
 					var connection = mysql.createConnection(config);
 					// Bind store_id to user_id
 					connection.query(
-						querys.userInStores.create,
-						[ userId, storeId, userStatus ],
+						querys.userInStores.create, [userId, storeId, userStatus],
 						(error, results, fields) => {
 							if (error)
 								throw res.json({
@@ -111,53 +109,69 @@ router.post('/store', (req, res) => {
 	});
 });
 
-// Add product to the databasse
-router.post('/product', (req, res) => {
-	// TODO : Validation
-	var productBarcode = req.body.productBarcode;
-	var productName = req.body.productName;
-	var productBrand = req.body.productBrand;
-	var productManufacturer = req.body.productManufacturer;
-	var productSize = req.body.productSize;
-	var productStatus = req.body.productStatus;
+// Manipulate product in the the databasse
+router.route('/product')
+	// Get all of the product in the database
+	.get((req, res) => {
+		var connection = mysql.createConnection(config);
 
-	var connection = mysql.createConnection(config);
+		connection.query(querys.products.getProduct,
+			(error, results, fields) => {
+				if (error) throw res.json({
+					status: 0,
+					error: error
+				});
 
-	// Check if product is in the database or not
-	connection.query(querys.products.isInTheDatabase, [ productBarcode, productBrand ], (error, results, fields) => {
-		if (error)
-			throw res.json({
-				status: 0,
-				error: error
-			});
-		if (!(results[0].result >= 1)) {
-			var connection = mysql.createConnection(config);
+				res.json(results);
+			})
+	})
+	// Add product to the database
+	.post((req, res) => {
+		// TODO : Validation
+		var productBarcode = req.body.productBarcode;
+		var productName = req.body.productName;
+		var productBrand = req.body.productBrand;
+		var productManufacturer = req.body.productManufacturer;
+		var productSize = req.body.productSize;
+		var productStatus = req.body.productStatus;
 
-			// Add product to products
-			connection.query(
-				querys.products.create,
-				[ productBarcode, productName, productBrand, productManufacturer, productSize, productStatus ],
-				(error, results, fields) => {
-					if (error)
-						throw res.json({
-							status: 0,
-							error: error
+		var connection = mysql.createConnection(config);
+
+		// Check if product is in the database or not
+		connection.query(querys.products.isInTheDatabase, [productBarcode, productBrand], (error, results, fields) => {
+			if (error)
+				throw res.json({
+					status: 0,
+					error: error
+				});
+			if (!(results[0].result >= 1)) {
+				var connection = mysql.createConnection(config);
+
+				// Add product to products
+				connection.query(
+					querys.products.create, [productBarcode, productName, productBrand, productManufacturer, productSize, productStatus],
+					(error, results, fields) => {
+						if (error)
+							throw res.json({
+								status: 0,
+								error: error
+							});
+
+						res.json({
+							status: 1,
+							productId: results.insertId,
+							error: null
 						});
-
-					res.json({
-						status: 1,
-						productId: results.insertId,
-						error: null
-					});
-				}
-			);
-		} else
-			res.json({
-				status: 0,
-				error: 'This product is already in the database'
-			});
+					}
+				);
+			} else
+				res.json({
+					status: 0,
+					error: 'This product is already in the database'
+				});
+		});
 	});
-});
+
 
 // GET product detail from the database
 router.get('/product/:productBarcode', (req, res) => {
@@ -165,7 +179,7 @@ router.get('/product/:productBarcode', (req, res) => {
 
 	var connection = mysql.createConnection(config);
 
-	connection.query(querys.products.getProductDetail, [ productBarcode ], (error, results, fields) => {
+	connection.query(querys.products.getProductDetail, [productBarcode], (error, results, fields) => {
 		if (error)
 			throw res.json({
 				status: 0,
@@ -182,6 +196,7 @@ router.get('/product/:productBarcode', (req, res) => {
 	});
 });
 
+// Get product detail from store , Add product to store
 router
 	.route('/product/:productBarcodeOrId/store/:storeId')
 	// Get product detail from store
@@ -192,8 +207,7 @@ router
 		var connection = mysql.createConnection(config);
 
 		connection.query(
-			querys.products.getProductDetailFromStore,
-			[ productBarcode, storeId ],
+			querys.products.getProductDetailFromStore, [productBarcode, storeId],
 			(error, results, fields) => {
 				if (error)
 					throw res.json({
@@ -230,7 +244,7 @@ router
 		var connection = mysql.createConnection(config);
 
 		//Check if this product is already in the store (first time add)
-		connection.query(querys.productInStores.isInTheDatabase, [ productId, storeId ], (error, results, fields) => {
+		connection.query(querys.productInStores.isInTheDatabase, [productId, storeId], (error, results, fields) => {
 			if (error)
 				throw res.json({
 					status: 0,
@@ -240,8 +254,7 @@ router
 			if (!(results[0].result >= 1)) {
 				var connection = mysql.createConnection(config);
 				connection.query(
-					querys.productInStores.create,
-					[ productId, storeId, productQuantity, productPrice, productMinimumQuantity ],
+					querys.productInStores.create, [productId, storeId, productQuantity, productPrice, productMinimumQuantity],
 					(error, results, fields) => {
 						if (error)
 							throw res.json({
@@ -259,8 +272,7 @@ router
 				var connection = mysql.createConnection(config);
 				// Else add to the product_logs table first 
 				connection.query(
-					querys.productLog.create,
-					[
+					querys.productLog.create, [
 						productId,
 						storeId,
 						querys.functions.CURRENT_TIMESTAMP,
@@ -279,8 +291,7 @@ router
 
 				// Then update to the product_in_stores table
 				connection.query(
-					querys.productInStores.updateStockIn,
-					[ productQuantity, productPrice, productMinimumQuantity, productId, storeId ],
+					querys.productInStores.updateStockIn, [productQuantity, productPrice, productMinimumQuantity, productId, storeId],
 					(error, results, fields) => {
 						if (error)
 							throw res.json({
@@ -304,7 +315,7 @@ router.post('/login', (req, res) => {
 
 	var connection = mysql.createConnection(config);
 
-	connection.query(querys.users.isInTheDatabase, [ email, password ], (error, results, fields) => {
+	connection.query(querys.users.isInTheDatabase, [email, password], (error, results, fields) => {
 		if (error)
 			res.json({
 				status: 0,
@@ -315,7 +326,7 @@ router.post('/login', (req, res) => {
 			var userId = results[0].user_id;
 
 			var connection = mysql.createConnection(config);
-			connection.query(querys.users.getUserStoreList, [ userId ], (error, results, fields) => {
+			connection.query(querys.users.getUserStoreList, [userId], (error, results, fields) => {
 				if (error)
 					throw res.json({
 						status: 0,
@@ -357,7 +368,7 @@ router.post('/store/:storeId/receipt', (req, res) => {
 
 		// TODO : Change algorithum
 		// Check product stock quantity
-		connection.query(querys.productInStores.getStockQuantity, [ productId, storeId ], (error, results, fields) => {
+		connection.query(querys.productInStores.getStockQuantity, [productId, storeId], (error, results, fields) => {
 			// TODO : FIX header error from send res more then 1 time (n loop)
 			if (error)
 				throw res.json({
@@ -368,8 +379,7 @@ router.post('/store/:storeId/receipt', (req, res) => {
 				var connection = mysql.createConnection(config);
 				// Update stock
 				connection.query(
-					querys.productInStores.updateStockOut,
-					[ saleQuantity, productId, storeId ],
+					querys.productInStores.updateStockOut, [saleQuantity, productId, storeId],
 					(error, results, fields) => {
 						// TODO : FIX header error from send res more then 1 time (n loop)
 						if (error)
@@ -394,8 +404,7 @@ router.post('/store/:storeId/receipt', (req, res) => {
 
 	// Create receipt
 	connection.query(
-		querys.receipt.create,
-		[
+		querys.receipt.create, [
 			userId,
 			storeId,
 			querys.functions.CURRENT_TIMESTAMP,
@@ -417,8 +426,7 @@ router.post('/store/:storeId/receipt', (req, res) => {
 				var connection = mysql.createConnection(config);
 
 				connection.query(
-					querys.receiptProductDetail.create,
-					[
+					querys.receiptProductDetail.create, [
 						receiptId,
 						productDetail[i].productId,
 						productDetail[i].saleQuantity,
