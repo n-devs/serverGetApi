@@ -264,7 +264,7 @@ router.route('/products/:productBarcode')
 
 		var connection = mysql.createConnection(config);
 
-
+		// TODO : fix algorithum 
 		connection.query(querys.products.isInTheDatabase, [productBarcode],
 			(error, results, field) => {
 				if (error)
