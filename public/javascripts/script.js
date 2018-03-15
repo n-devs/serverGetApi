@@ -5,12 +5,13 @@ $(document).ready(function () {
             productStatus: 1
         },
         dataType: 'json',
-        success: function (responseText, statusText, xhr, $form) {
-            if (responseText.status == 1) {
-                alert('SUCCESS productId : ' + responseText.productId);
-                $form.resetForm();
-            } else
-                alert(responseText.error);
+        success: (responseText, statusText, xhr, $form) => {
+            alert('SUCCESS productId : ' + responseText.productId);
+            $form.resetForm();
+        },
+        error: (jqXHR, textStatus, errorThrown) => {
+            var responseText = JSON.parse(jqXHR.responseText);
+            alert(errorThrown + ': ' + responseText.error);
         }
     };
     // bind 'myForm' and provide a simple callback function 

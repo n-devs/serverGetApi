@@ -11,14 +11,14 @@
     <script src="/javascripts/script.js"></script>
 
 
-    <title>Product Registerc Form</title>
+    <title>Product Register Form</title>
 </head>
 
 <body>
     <h1>เพิ่มสินค้าเข้าสู่ฐานข้อมูล</h1>
 
 
-    <form action="<%= serverAddress  %>:3000/api/product" method="POST" class="myForm">
+    <form action="<%= serverAddress  %>:3000/apis/products" method="POST" class="myForm">
         <label for="productBarcode">รหัส Barcode:</label>
         <input type="text" name="productBarcode" id="productBarcode" placeholder="123456789" required>
         <span style="color:red">*</span>

@@ -22,20 +22,24 @@ module.exports = {
 	},
 
 	products: {
-		isInTheDatabase: 'SELECT count(*) as result FROM products WHERE product_barcode = ? AND product_brand = ?',
+		isInTheDatabase: 'SELECT product_id AS productId FROM products WHERE product_barcode = ?',
 
-		getProductDetailFromStore: 'SELECT pd.product_id AS productId, pd.product_name AS productName, pd.product_brand AS productBrand, pis.product_price AS productPrice, pis.product_quantity AS productQuantity FROM products as pd JOIN product_in_stores as pis ON pd.product_id = pis.product_id WHERE pd.product_barcode = ? AND pis.store_id = ? ',
+		getProductDetailFromStore: 'SELECT pd.product_id AS productId, product_barcode AS productBarcode, pd.product_name AS productName, pd.product_brand AS productBrand, product_manufacturer AS productManufacturer, product_size AS productSize, pis.product_price AS productPrice, pis.product_quantity AS productQuantity, product_minimum_quantity AS productMinimumQuantity FROM products as pd JOIN product_in_stores as pis ON pd.product_id = pis.product_id WHERE pd.product_id = ? AND pis.store_id = ? ',
 
-		getProductDetail: 'SELECT product_id AS productId, product_name AS productName, product_brand AS productBrand FROM products WHERE product_barcode = ?',
+		getProductDetailSpecific: 'SELECT product_id AS productId, product_barcode AS productBarcode, product_name AS productName, product_brand AS productBrand, product_manufacturer AS productManufacturer, product_size AS productSize, product_status AS productStatus FROM products WHERE product_Id = ?',
 
-		getProduct: 'SELECT product_id AS productId, product_barcode AS productBarcode, product_brand AS productBrand, product_manufacturer AS productManufacturer, product_size AS productSize, product_status AS productStatus FROM products',
+		getProductDetail: 'SELECT product_id AS productId, product_barcode AS productBarcode, product_name AS productName, product_brand AS productBrand, product_manufacturer AS productManufacturer, product_size AS productSize, product_status AS productStatus FROM products',
 
-		create: 'INSERT INTO products (product_barcode, product_name, product_brand, product_manufacturer, product_size, product_status) VALUES (?, ?, ?, ?, ?, ?)'
+		create: 'INSERT INTO products (product_barcode, product_name, product_brand, product_manufacturer, product_size, product_status) VALUES (?, ?, ?, ?, ?, ?)',
+
+		delete: 'DELETE FROM products WHERE product_id = ?',
+
+		update: 'UPDATE products SET product_barcode = ?, product_name = ?, product_brand = ?, product_manufacturer = ?, product_size = ?, product_status = ? WHERE product_id = ?'
 
 	},
 
 	productInStores: {
-		isInTheDatabase: 'SELECT count(*) as result FROM product_in_stores WHERE product_id = ?AND store_id = ?',
+		isInTheDatabase: 'SELECT count(*) as result FROM product_in_stores WHERE product_id = ? AND store_id = ?',
 		create: 'INSERT INTO product_in_stores (product_id, store_id, product_quantity, product_price, product_minimum_quantity) VALUES (?, ?, ?, ?, ?)',
 
 		updateStockIn: 'UPDATE product_in_stores SET product_quantity = product_quantity + ?, product_price = ?, product_minimum_quantity = ? WHERE product_id = ? AND store_id = ?',
