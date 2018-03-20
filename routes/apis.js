@@ -201,8 +201,9 @@ router.route('/products')
 					status: 0,
 					error: error
 				});
-
-				res.json(results);
+				res.json({
+					products: results
+				});
 			})
 	})
 
@@ -235,6 +236,7 @@ router.route('/products/:productBarcode')
 						if (results.length >= 1) {
 							res.json({
 								productId: results[0].productId,
+								productBarcode: results[0].productBarcode,
 								productName: results[0].productName,
 								productBrand: results[0].productBrand,
 								productManufacturer: results[0].productManufacturer,
