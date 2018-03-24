@@ -1,7 +1,3 @@
-import {
-	connect
-} from 'http2';
-
 var express = require('express');
 var mysql = require('mysql');
 var config = require('../config/database');
