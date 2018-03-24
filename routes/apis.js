@@ -1,3 +1,7 @@
+import {
+	connect
+} from 'http2';
+
 var express = require('express');
 var mysql = require('mysql');
 var config = require('../config/database');
@@ -47,6 +51,7 @@ router.post('/register', function (req, res) {
 });
 // Login
 router.post('/login', (req, res) => {
+	// TODO : Validation
 	var email = req.body.email;
 	var password = req.body.password;
 
@@ -85,64 +90,182 @@ router.post('/login', (req, res) => {
 	});
 });
 // Add store to the database
-router.post('/stores', (req, res) => {
-	//TODO : Validation
-	var storeName = req.body.storeName;
-	var storeAddress = req.body.storeAddress;
-	var storeSubDistrict = req.body.storeSubDistrict;
-	var storeDistrict = req.body.storeDistrict;
-	var storeProvince = req.body.storeProvince;
-	var storePostalCode = req.body.storePostalCode;
-	var userId = req.body.userId;
-	var userStatus = req.body.userStatus;
+router.route('/stores')
+	.post((req, res) => {
+		//TODO : Validation
+		var storeName = req.body.storeName;
+		var storeAddress = req.body.storeAddress;
+		var storeSubDistrict = req.body.storeSubDistrict;
+		var storeDistrict = req.body.storeDistrict;
+		var storeProvince = req.body.storeProvince;
+		var storePostalCode = req.body.storePostalCode;
+		var userId = req.body.userId;
+		var userStatus = req.body.userStatus;
 
-	var connection = mysql.createConnection(config);
+		var connection = mysql.createConnection(config);
 
-	// Check if this store name in the database
-	connection.query(querys.stores.isInTheDatabase, [storeName], (error, results, fields) => {
-		if (error)
-			throw res.status(404).json({
-				status: 0,
-				error: error
-			});
-		if (!(results.length >= 1)) {
-			var connection = mysql.createConnection(config);
-			// Add store to the database
-			connection.query(
-				querys.stores.create, [storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode],
-				(error, results, fields) => {
-					if (error)
-						throw res.status(404).json({
-							status: 0,
-							error: error
-						});
-					var storeId = results.insertId;
-					var connection = mysql.createConnection(config);
-					// Bind store_id to user_id
-					connection.query(
-						querys.userInStores.create, [userId, storeId, userStatus],
-						(error, results, fields) => {
-							if (error)
-								throw res.json({
-									status: 0,
-									error: error
+		// Check if this store name in the database
+		connection.query(querys.stores.isInTheDatabaseSpecificName, [storeName], (error, results, fields) => {
+			if (error)
+				throw res.status(404).json({
+					status: 0,
+					error: error
+				});
+			if (!(results.length >= 1)) {
+				var connection = mysql.createConnection(config);
+				// Add store to the database
+				connection.query(
+					querys.stores.create, [storeName, storeAddress, storeSubDistrict, storeDistrict, storeProvince, storePostalCode],
+					(error, results, fields) => {
+						if (error)
+							throw res.status(404).json({
+								status: 0,
+								error: error
+							});
+						var storeId = results.insertId;
+						var connection = mysql.createConnection(config);
+						// Bind store_id to user_id
+						connection.query(
+							querys.userInStores.create, [userId, storeId, userStatus],
+							(error, results, fields) => {
+								if (error)
+									throw res.json({
+										status: 0,
+										error: error
+									});
+								res.status(201).json({
+									status: 1,
+									storeId: storeId,
+									error: null
 								});
-							res.status(201).json({
-								status: 1,
-								storeId: storeId,
-								error: null
+							}
+						);
+					}
+				);
+			} else
+				res.status(409).json({
+					status: 0,
+					error: 'This store is already in the database'
+				});
+		});
+	})
+	.get((req, res) => {
+		const connection = mysql.createConnection(config);
+
+		// Check if there is any store in the database
+		connection.query(querys.stores.isInTheDatabase,
+			(error, results, fields) => {
+				if (error) throw res.status(404).json({
+					status: 0,
+					error: error
+				});
+
+				// If table is not empty then response all of the store back
+				if (results.length >= 1) {
+					const connection = mysql.createConnection(config);
+					connection.query(querys.stores.getStores,
+						(error, results, fields) => {
+							if (error) throw res.status(404).json({
+								status: 0,
+								error: error
+							});
+							res.json({
+								stores: results
 							});
 						}
-					);
-				}
-			);
-		} else
-			res.status(409).json({
-				status: 0,
-				error: 'This store is already in the database'
-			});
+					)
+					// If table is empty
+				} else res.status(404).json({
+					status: 0,
+					error: 'Stores is Empty'
+				})
+			})
+
+
+
+		connection
 	});
-});
+router.route('/stores/:storeId')
+	.get((req, res) => {
+		const connection = mysql.createConnection(config);
+		const storeId = req.params.storeId;
+
+		// Check if store is in the database
+		connection.query(querys.stores.isInTheDatabaseSpecificId, [storeId],
+			(error, results, fields) => {
+				if (error) throw res.status(404).json({
+					status: 0,
+					error
+				});
+
+				// If there is
+				if (results.length >= 1) {
+					const connection = mysql.createConnection(config);
+					connection.query(querys.stores.getStore, [storeId],
+						(error, results, fields) => {
+							const connection = mysql.createConnection(config);
+							if (error) throw res.status(404).json({
+								status: 0,
+								error
+							});
+
+							let [{
+								storeId,
+								storeName,
+								storeAddress,
+								storeSubDistrict,
+								storeDistrict,
+								storeProvince,
+								storePostalCode
+							}] = results;
+
+							connection.query(querys.userInStores.getUserInStore, [storeId],
+								(error, results, fields) => {
+									if (error) throw res.status(404).json({
+										status: 0,
+										error
+									});
+
+
+									res.json({
+										storeId,
+										storeName,
+										storeAddress,
+										storeSubDistrict,
+										storeDistrict,
+										storeProvince,
+										storePostalCode,
+										storeMember: results
+									});
+								})
+
+
+						})
+					// If there isn't
+				} else res.status(404).json({
+					status: 0,
+					error: 'This store is not in the database.'
+				});
+			})
+	})
+	// TODO : Add algorithum
+	.put((req, res) => {
+		res.status(404).end('In the process of making PUT')
+	})
+	// TODO : Add algorithum
+	.delete((req, res) => {
+		res.status(404).end('In the process of making DELETE')
+	});
+
+// TODO : Finish this when have time
+// router.get('users/:userId/stores', ((req, res) => {
+// 	const userId = req.params.userId;
+// 	const connection = mysql.createConnection(config);
+
+// 	connect.query();
+
+
+// }));
 // Manipulate product in the the databasse
 router.route('/products')
 	// Add product to the database
@@ -158,7 +281,7 @@ router.route('/products')
 		var connection = mysql.createConnection(config);
 
 		// Check if product is in the database or not
-		connection.query(querys.products.isInTheDatabase, [productBarcode], (error, results, fields) => {
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode], (error, results, fields) => {
 			if (error)
 				throw res.status(404).json({
 					status: 0,
@@ -195,17 +318,33 @@ router.route('/products')
 	.get((req, res) => {
 		var connection = mysql.createConnection(config);
 
-		connection.query(querys.products.getProductDetail,
+		connection.query(querys.products.isInTheDatabase,
 			(error, results, fields) => {
-				if (error) throw res.json({
+				if (error) throw res.status(404).json({
 					status: 0,
 					error: error
 				});
-				res.json({
-					products: results
+
+				if (results.length >= 1) {
+					const connection = mysql.createConnection(config);
+					connection.query(querys.products.getProducts,
+						(error, results, fields) => {
+							if (error) throw res.status(404).json({
+								status: 0,
+								error: error
+							});
+							res.json({
+								products: results
+							});
+						})
+				} else res.status(404).json({
+					status: 0,
+					error: 'Product table is empty'
 				});
 			})
-	})
+
+
+	});
 
 // Manipulate product in the the databasse (Single)
 router.route('/products/:productBarcode')
@@ -216,7 +355,7 @@ router.route('/products/:productBarcode')
 		var connection = mysql.createConnection(config);
 
 		// Get productId
-		connection.query(querys.products.isInTheDatabase, [productBarcode],
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode],
 			(error, results, field) => {
 				if (error) throw res.status(404).json({
 					status: 0,
@@ -226,7 +365,7 @@ router.route('/products/:productBarcode')
 				// If found product in the database then get data
 				if (results.length >= 1) {
 					var productId = results[0].productId
-					connection.query(querys.products.getProductDetailSpecific, [productId], (error, results, fields) => {
+					connection.query(querys.products.getProduct, [productId], (error, results, fields) => {
 						if (error)
 							throw res.json({
 								status: 0,
@@ -267,7 +406,7 @@ router.route('/products/:productBarcode')
 		var connection = mysql.createConnection(config);
 
 		// TODO : fix algorithum 
-		connection.query(querys.products.isInTheDatabase, [productBarcode],
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode],
 			(error, results, field) => {
 				if (error)
 					throw res.status(404).json({
@@ -279,7 +418,7 @@ router.route('/products/:productBarcode')
 				if (results.length >= 1) {
 					var productId = results[0].productId;
 					var connection = mysql.createConnection(config);
-					connection.query(querys.products.getProductDetailSpecific, [productId], (error, results, fields) => {
+					connection.query(querys.products.getProduct, [productId], (error, results, fields) => {
 						if (error)
 							throw res.status(404).json({
 								status: 0,
@@ -326,7 +465,7 @@ router.route('/products/:productBarcode')
 
 		var connection = mysql.createConnection(config);
 		// Get productId
-		connection.query(querys.products.isInTheDatabase, [productBarcode],
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode],
 			(error, results, field) => {
 				if (error) throw res.status(404).json({
 					status: 0,
@@ -371,7 +510,7 @@ router.route('/products/:productBarcode/stores/:storeId')
 
 		var connection = mysql.createConnection(config);
 
-		connection.query(querys.products.isInTheDatabase, [productBarcode],
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode],
 			(error, results, fields) => {
 				if (error)
 					throw res.status(404).json({
@@ -425,14 +564,13 @@ router.route('/products/:productBarcode/stores/:storeId')
 		var connection = mysql.createConnection(config);
 
 		// Get productId
-		connection.query(querys.products.isInTheDatabase, [productBarcode],
+		connection.query(querys.products.isInTheDatabaseSpecific, [productBarcode],
 			(error, results, fields) => {
 				if (error) throw res.status(404).json({
 					status: 0,
 					error: error
 				});
 
-				console.log(results);
 				if (results.length >= 1) {
 					var productId = results[0].productId;
 					var connection = mysql.createConnection(config);
@@ -577,6 +715,7 @@ router.post('/stores/:storeId/receipts', (req, res) => {
 
 				connection.query(querys.receiptProductDetail.create, [receiptId, productDetail[i].productId, productDetail[i].saleQuantity, productDetail[i].salePrice, productDetail[i].saleTotalPrice],
 					(error, results, fields) => {
+						if (error) console.log(error);
 						// TODO : FIX header error from send res more then 1 time (n loop)
 						// if (error)
 						// 	throw res.json({
