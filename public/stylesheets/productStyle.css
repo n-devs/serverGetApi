@@ -1,0 +1,291 @@
+body {
+  display: block;
+  margin: 0;
+}
+
+.produc-example {
+  position: relative;
+  padding: 3em 1em 1em;
+  border: 1px solid #d8d8d8;
+  margin: 1.5rem 0 0;
+}
+
+.produc-example::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 1em;
+  color: #aaa;
+  font-size: 10;
+  font-weight: 1000;
+  content: 'รายละเอียดสินค้า';
+}
+
+
+.table-example table {
+  position: relative;
+  padding: 1em;
+  border: 1px solid #d8d8d8;
+  margin: 1.5rem 0 0 0;
+  min-width: auto;
+ 
+}
+
+
+
+.search-example {
+  position: relative;
+  padding: 3em 1em 1em;
+  border: 1px solid #d8d8d8;
+  margin: 1.5rem 0 0;
+}
+
+.search-example::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 1em;
+  color: #aaa;
+  font-size: 10;
+  font-weight: 1000;
+  content: 'สินค้า';
+}
+
+
+*, :after, :before {
+  box-sizing: border-box;
+}
+
+
+.size-form {
+  -webkit-box-flex: 0;
+  -ms-flex: 0 0 75%;
+  flex: 0 0 75%;
+  /* max-width: 75%; */
+}
+
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container {
+  max-width: 960px;
+  min-width: auto;
+}
+
+.input-container {
+  position: relative;
+  margin: -55px 60px 1px;
+  padding: 60px 0 40px 0;
+}
+
+
+.input-container input {
+  outline: none;
+  z-index: 1;
+  position: relative;
+  background: none;
+  width: 100%;
+  height: 60px;
+  border: 0;
+  color: #212121;
+  font-size: 24px;
+  font-weight: 400;
+  border-bottom: 1px solid #ccc;
+}
+.input-container input:focus ~ label {
+  color: #9d9d9d;
+  -webkit-transform: translate(-12%, -20%) scale(0.75);
+          transform: translate(-12%, -20%) scale(0.75);
+}
+ .input-container input:focus ~ .bar:before,  .input-container input:focus ~ .bar:after {
+  width: 50%;
+}
+ .input-container input:valid ~ label {
+  color: #9d9d9d;
+  -webkit-transform: translate(-12%, -20%) scale(0.75);
+          transform: translate(-12%, -20%) scale(0.75);
+}
+ .input-container label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #757575;
+  font-size: 24px;
+  font-weight: 300;
+  line-height: 200px;
+  -webkit-transition: 0.2s ease;
+  transition: 0.2s ease;
+}
+
+ button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+.button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 47%;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.container-modle .finishbtn {
+  width: 98%;
+  padding: 16px 18px;
+  margin: 1%;
+  background-color: #006d31;
+}
+
+#deleteProduct {
+  padding: 5%;
+  width: 30px;
+  float: right;
+  background-color: #6d1900;
+}
+
+#editProduct {
+  padding: 5%;
+  width: 40px;
+  float: left;
+  background-color: #006d31;
+}
+
+#yesbtn{
+  padding: 16px 18px;
+  width: 40%;
+  float: right;
+  background-color: #6d1900;
+}
+
+#nobtn{
+  width: 40%;
+  background-color: #006d31;
+}
+
+#addProduct {
+  margin: 0;
+  padding: 13px 0;
+  width: 70px;
+  float: right;
+  background-color: #006d09;
+}
+/* Center the image and position the close button */
+
+
+
+
+.container-modal {
+  padding: 16px;
+}
+
+
+.modal {
+  display: block; 
+  position: fixed; 
+  z-index: 1; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgb(0,0,0); 
+  background-color: rgba(0,0,0,0.4); 
+  padding-top: 60px;
+}
+
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  max-width: 640px; /* Could be more or less, depending on screen size */
+  min-width: 414px, 411px;
+ 
+}
+
+/* The Close Button (x) */
+.modal-content .close {
+ 
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+  margin-left: 95%;
+
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+
+.btn-group, .btn-group-vertical {
+  position: relative;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+
+
+#myInputSearchData {
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url('https://www.w3schools.com/howto/searchicon.png');
+  background-position: 10px 10px; 
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 40px;
+  -webkit-transition: width 0.4s ease-in-out;
+  transition: width 0.4s ease-in-out;
+}

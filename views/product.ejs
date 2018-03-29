@@ -5,52 +5,112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <title>Tung Ton</title>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l"
+        crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c"
+        crossorigin="anonymous"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
     <script src="http://malsup.github.com/jquery.form.js"></script>
-    <script src="/javascripts/script.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
+        #myInputSearchData {
+            background-image: url('/css/searchicon.png');
+            background-position: 10px 12px;
+            background-repeat: no-repeat;
+            width: 50%;
+            font-size: 16px;
+            padding: 12px 20px 12px 40px;
+            border: 1px solid #ddd;
+            margin-bottom: 12px;
+        }
 
-    <title>Product Register Form</title>
+      
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        hth {
+            font-weight: bold;
+            text-align: -internal-center;
+        }
+
+        user agent stylesheet td,
+        hth {
+            display: table-cell;
+            vertical-align: inherit;
+        }
+
+        th,
+        td {
+            text-align: center;
+            border: 1px solid #dee2e6;
+
+        }
+
+        htr {
+            display: table-row;
+            vertical-align: inherit;
+            border-color: inherit;
+            background-color: #1d1c1c;
+            color: white;
+
+        }
+
+        hth,
+        td {
+            text-align: center;
+            border: 1px solid #dee2e6;
+
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        htr:nth-child(even) {
+            background-color: #616060;
+        }
+
+        .t0-input {
+            padding: 8px;
+            display: block;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            width: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="stylesheets/productStyle.css">
+
 </head>
 
 <body>
-    <h1>เพิ่มสินค้าเข้าสู่ฐานข้อมูล</h1>
+
+    <div id="detailProduct">
+    </div>
+    <div class="container">
+        <div class="size-form">
+            <div class="search-example">
+                <div>
+                    <input name="search" type="text" id="myInputSearchData" onkeyup="searchData()" placeholder="ค้นหาบาร์โค๊ดสินค้า" title="Type in a name">
+
+                    <button id="addProduct" onclick="addProduct()">เพิ่มสินค้า</button>
 
 
-    <form action="<%= serverAddress  %>:3000/apis/products" method="POST" class="myForm">
-        <label for="productBarcode">รหัส Barcode:</label>
-        <input type="text" name="productBarcode" id="productBarcode" placeholder="123456789" required>
-        <span style="color:red">*</span>
-        <br>
-        <br>
+                    <div class="table-example">
+                        <table id="item" class="table table-bordered">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <label for="productName">ชื่อสินค้า:</label>
-        <input type="text" name="productName" id="productName" placeholder="ลูกอมฮอลล์ผสมนํ้าผึ้ง" required>
-        <span style="color:red">*</span>
-        <br>
-        <br>
-
-        <label for="productBrand">แบรนด์ / ยี่ห้อ:</label>
-        <input type="text" name="productBrand" id="productBrand" placeholder="Puton" required>
-        <span style="color:red">*</span>
-        <br>
-        <br>
-
-        <label for="productManufacturer">โรงงานที่ผลิต:</label>
-        <input type="text" name="productManufacturer" id="productManufacturer" placeholder="Puton Company">
-        <br>
-        <br>
-
-        <label for="productSize">ขนาดสินค้า:</label>
-        <input type="text" name="productSize" id="productSize" placeholder="S">
-        <br>
-        <br>
-
-        <button type="submit">ส่ง</button>
-    </form>
-
-
+    <script src="javascripts/productScript.js"></script>
 </body>
 
 </html>
