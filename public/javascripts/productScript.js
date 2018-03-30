@@ -173,10 +173,10 @@ function checkData(funcProduct) {
                         </div>
                         <div class="input-container">
                             <input value="${detailProductSize}" type="#{label}" id="pSize" required="required" class="t0-input" id="pSize">
-                            <label for="#{label}">จำนวนสินค้า:</label>
+                            <label for="#{label}">ขนาดสินค้า:</label>
                             <div class="bar"></div>
                         </div>
-                        <div class="input-container">
+                        <div class="input-container"
                             <input value="${detailProductStatus}" type="#{label}" id="pStatus" required="required" class="t0-input" id="pSize">
                             <label for="#{label}">สถานะสินค้า:</label>
                             <div class="bar"></div>
@@ -213,7 +213,7 @@ function finishEditData(funcContros) {
     $("input[name='editData']").attr('disabled', true)
     $("#editData").text('แก้ไขสินค้า').removeAttr('onclick')
     $("#editData").attr('onclick', `editData(${funcContros})`)
-
+    
     const pBarCode = document.getElementById("pBarCode").value;
     const pName = document.getElementById("pName").value;
     const pBrand = document.getElementById("pBrand").value;
@@ -230,6 +230,7 @@ function finishEditData(funcContros) {
 
         let getData = JSON.parse(getApiFinishEditData.response);
         if (getApiFinishEditData.readyState == 4 && getApiFinishEditData.status == "200") {
+            
             var productId, productBarcode, productName, productBrand, productManufacturer,
                 productSize, productStatus;
             if (funcContros == funcContros) {
@@ -279,6 +280,7 @@ function finishEditData(funcContros) {
         putApi.onload = function () {
             let users = JSON.parse(putApi.responseText);
             if (putApi.readyState == 4 && putApi.status == "200") {
+                
                 document.getElementById('addProductForm').style.display = 'none';
                 const pupUp = `
                 <div id="finishbtn" class="modal">
@@ -287,7 +289,7 @@ function finishEditData(funcContros) {
                 <center><h1>แก้ไขเสร็จสิ้น</h1></center>
                 </div>
                 <div class="container-modle" style="background-color:#f1f1f1">
-                <button onclick="document.getElementById('finishbtn').style.display='none'">ตกลง</button>
+                <button onclick="document.getElementById('finishbtn').style.display='none', location.reload()">ตกลง</button>
                 </div>
                 </div>
                 </div>`
@@ -306,7 +308,7 @@ let labalProductBarcode = ''
 
 function addProduct(funcControsAdd) {
     console.log(funcControsAdd);
-
+// จะเพิ่ม *
     let addProduct = ` <div id="addProductForm" class="modal">
 
     <form class="modal-content animate"  >
@@ -338,7 +340,7 @@ function addProduct(funcControsAdd) {
             </div>
             <div class="input-container">
                 <input type="#{label}" name="productSize" id="productSize" required="required" class="t0-input" id="pSize">
-                <label for="#{label}">จำนวนสินค้า:</label>
+                <label for="#{label}">ขนาดสินค้า:</label>
                 <div class="bar"></div>
             </div>
         </div>
